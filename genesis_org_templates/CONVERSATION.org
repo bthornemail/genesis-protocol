@@ -1,0 +1,19 @@
+#+TITLE: CONVERSATION.org (Append-only Log)
+#+AUTHOR: Brian Thorne
+#+DATE: 2025-12-24
+#+PROPERTY: GENESIS_ROLE "conversation"
+#+OPTIONS: toc:2 num:nil
+
+* Entry 0001 — Genesis-Protocol synthesis
+This file is an append-only narrative + reasoning log.
+It is allowed to be metaphorical. It MUST remain compatible with later exports.
+
+** Notes
+- GENESIS.org: authority and invariants
+- genesis.sh: minimal operational mirror
+- INDEX.org: template registry + emission maps
+- GLOSSARY.org: shared vocabulary
+
+** Next steps
+- Add MANIFESTO.org / REVELATION.org as personal/public split
+- Add SCHEMA.org / SCHEME.org when ready
