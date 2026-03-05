@@ -1,0 +1,81 @@
+#+TITLE: INDEX.org (Template Registry)
+#+AUTHOR: Brian Thorne
+#+DATE: 2025-12-24
+#+PROPERTY: GENESIS_ROLE "index"
+#+OPTIONS: toc:2 num:nil
+
+* Purpose
+INDEX.org is the *registry* that maps:
+- meta-tag / enclosure operators (syntax space)
+- org structure templates (tempo)
+- export targets (.md, .sh, .scm, .c, .js, .canvas)
+
+This is the “virtual INDEX” even when a repo does not ship an INDEX file: the kernel docs define it implicitly.
+
+* Glossary and Conversation anchors
+- [[file:GLOSSARY.org][GLOSSARY.org]]
+- [[file:CONVERSATION.org][CONVERSATION.org]]
+
+* Emacs templates (drop-in for init.el or genesis-tempo.el)
+** Install
+- Put the block below into =~/.emacs.d/genesis-tempo.el=
+- Then add: (load "/path/to/genesis-tempo.el") to init.el
+
+#+NAME: genesis.tempo.el
+#+BEGIN_SRC emacs-lisp
+;;; genesis-tempo.el --- GENESIS templates for org-tempo -*- lexical-binding: t; -*-
+
+(require 'org)
+(require 'org-tempo)
+
+;; We do NOT hardcode a “pinch point” meta-tag.
+;; Any non-alphanumeric operator may serve as enclosure.
+;; Emoji repetition = polynomial degree (user-chosen).
+
+(defvar genesis-org-structure-template-alist
+  '(("g" . "src sh")                 ; shell
+    ("G" . "src org")                ; org-in-org (self reference)
+    ("s" . "src scheme")             ; scheme/guile
+    ("c" . "src C")                  ; C
+    ("j" . "src js")                 ; JavaScript
+    ("m" . "src markdown")           ; Markdown
+    ("H" . "example")                ; provenance literal region
+    ("S" . "quote")                  ; schema text / citations
+    ("X" . "comment"))               ; excluded / inert
+  "GENESIS structure templates for org-insert-structure-template.")
+
+(dolist (tpl genesis-org-structure-template-alist)
+  (add-to-list 'org-structure-template-alist tpl t))
+
+(defvar genesis-org-tempo-keywords-alist
+  '(("gs" . "src sh")
+    ("gS" . "src scheme")
+    ("gC" . "src C")
+    ("gj" . "src js")
+    ("gm" . "src markdown")
+    ("gH" . "example")
+    ("gX" . "comment"))
+  "GENESIS tempo keywords.")
+
+(dolist (kw genesis-org-tempo-keywords-alist)
+  (add-to-list 'org-tempo-keywords-alist kw t))
+
+(provide 'genesis-tempo)
+;;; genesis-tempo.el ends here
+#+END_SRC
+
+* Export map (org → md)
+#+NAME: genesis.export.map
+#+BEGIN_SRC text
+ORG -> MD : preserve headings, preserve code blocks, preserve provenance footers
+ORG -> SH : tangle src sh
+ORG -> SCM: tangle src scheme
+ORG -> C  : tangle src C
+ORG -> JS : tangle src js
+ORG -> CANVAS: emit JSON nodes from headings + links
+#+END_SRC
+
+* Template conventions
+- Use #+NAME: blocks as stable anchors.
+- Use :tangle for executable projections.
+- Treat separators/emoji as syntax operators (views), never identity.

@@ -1,0 +1,43 @@
+#+TITLE: GLOSSARY.org
+#+AUTHOR: Brian Thorne
+#+DATE: 2025-12-24
+#+OPTIONS: toc:2 num:nil
+
+* GENESIS fourfold (protocol terms)
+** INCLUDE
+Selection of atoms for further interpretation/emission.
+
+** IGNORE
+Exclusion boundary: atoms remain unknown/unknowable *by choice* (not read, not interpreted).
+
+** SCHEMA
+Shared, verifiable structure describing what forms are allowed.
+
+** SCHEME
+Executable/operational meaning: the interpreter/compiler behavior applied inside a syntax region.
+
+* Your personal fourfold (purview)
+** Freedom
+The right to choose a path and a view.
+
+** Autonomy
+Local control of interpretation/emission.
+
+** Sovereignty
+Ownership of constraints and authority boundaries.
+
+** Reciprocity
+Proof-of-relationship: only what responds can remain.
+
+* Supporting four (G.L.U.E.)
+** Grace
+Assume good faith for unknowns until proven otherwise.
+
+** Love
+Prefer connection that preserves dignity.
+
+** Understanding
+Model the other’s constraints before judging their outputs.
+
+** Empathy
+Keep the human-in-the-loop even in formal systems.

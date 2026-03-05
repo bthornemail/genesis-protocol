@@ -1,0 +1,9 @@
+{
+	"nodes":[
+		{"id":"6f880b84e21fd0ec","x":-289,"y":-422,"width":250,"height":60,"type":"text","text":""},
+		{"id":"3dfa73e2ac502fd3","x":-380,"y":-280,"width":420,"height":110,"type":"text","text":"HARDWARE_REGEX\n```sh\n'^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$'\n```"},
+		{"id":"bec28e731025c7e2","x":-380,"y":-140,"width":329,"height":118,"type":"text","text":"SOFTWARE_REGEX\n```sh\n's/[^A-Za-z0-9.]/ /g'\n```"},
+		{"id":"7d73e5a522eea97c","x":-51,"y":20,"width":501,"height":200,"type":"text","text":"HARDWARE_REGEX='^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$'\nSOFTWARE_SED='s/[^A-Za-z0-9.]/ /g'\nSYNTAX_SPACE = [^A-Za-z0-9.]+  ; enclosure markers\nSOFTWARE_SPACE = [A-Za-z0-9.]+ \nHARDWARE_BITMAP = probe_stat(path) -> byte groups (IP6-like)\nMETA-TAG = any non-alphanumeric enclosure operator"}
+	],
+	"edges":[]
+}

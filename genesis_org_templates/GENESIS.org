@@ -1,0 +1,127 @@
+#+TITLE: GENESIS.org (Canonical Authority)
+#+SUBTITLE: Layer −0..3 bridge + Org structure templates (INDEX)
+#+AUTHOR: Brian Thorne
+#+DATE: 2025-12-24
+#+PROPERTY: GENESIS_VERSION 0.1
+#+PROPERTY: GENESIS_LAYERS "-0,0,1,2,3"
+#+PROPERTY: GENESIS_ROLE "authority"
+#+OPTIONS: toc:2 num:nil
+
+* Purpose
+GENESIS.org is the *authoritative semantic contract* for the GENESIS substrate.
+
+- Layer −0/+0: file atom observation (POSIX stat → hardware bitmap)
+- Layer 1: container annotation (path/PATH, existence, role)
+- Layer 2: syntax/view regions (non-alphanumeric enclosure / meta-tags)
+- Layer 3: emission (tangle/export) — optional projections
+
+* Repository Canon
+These files are the canonical “kernel documents”:
+
+- [[file:INDEX.org][INDEX.org]]        (structure templates + lookup)
+- [[file:GLOSSARY.org][GLOSSARY.org]]  (terms, invariants, fourfolds)
+- [[file:CONVERSATION.org][CONVERSATION.org]] (append-only reasoning log)
+- [[file:README.org][README.org]]      (public intro — optional)
+- [[file:REVELATION.org][REVELATION.org]] (personal narrative — optional)
+
+* Layers −0..3 (inheriting the shell foundation)
+** Layer −0 / 0: Hardware constraint (byte bitmap)
+Hardware is *byte-addressable provenance* derived from POSIX stat fields (inode/size/mtime at minimum).
+It is not “meaning”. It is identity/provenance.
+
+#+NAME: genesis.layer-0.hardware-constraint
+#+BEGIN_SRC text
+HARDWARE_REGEX = ^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$
+HARDWARE_BITMAP = probe_stat(path) -> byte groups (IP6-like)
+#+END_SRC
+
+** Layer 1: Software semantic space (alphanumeric meaning)
+Software is *alphanumeric semantics* (names, symbols, identifiers). It is preserved.
+
+#+NAME: genesis.layer-1.software-space
+#+BEGIN_SRC text
+SOFTWARE_SPACE = [A-Za-z0-9.]+    ; semantic tokens
+PATH (virtual template) vs path (existing path) are views of the same atom.
+#+END_SRC
+
+** Layer 2: Syntax / View enclosure (non-alphanumeric meta-tags)
+Syntax is the *projection region*: an enclosure marker that is non-alphanumeric.
+This defines where interpretation may occur, without defining what it means.
+
+#+NAME: genesis.layer-2.syntax-space
+#+BEGIN_SRC text
+SYNTAX_SPACE = [^A-Za-z0-9.]+  ; enclosure markers
+META-TAG = any non-alphanumeric enclosure operator
+Polynomial degree = length / repetition of the marker (e.g., emoji count), NOT dimension.
+#+END_SRC
+
+** Layer 3: Emission / Translation
+Emission creates projections (org → md, org → code, org → canvas).
+This is *optional* and MUST NOT change hardware provenance.
+
+#+NAME: genesis.layer-3.emission
+#+BEGIN_SRC text
+EMIT(file, target) preserves HARDWARE_BITMAP; changes only VIEW.
+Examples: tangle to .sh/.scm/.c/.js, export to .md, emit canvas JSON.
+#+END_SRC
+
+* The GENESIS CLI (reference implementation)
+This is the operational mirror. The canonical implementation lives in genesis.sh.
+
+#+NAME: genesis.cli.shell
+#+BEGIN_SRC sh :tangle genesis.sh
+#!/bin/sh
+set -eu
+
+HARDWARE_REGEX='^([0-9A-Fa-f]{2}:)+[0-9A-Fa-f]{2}$'
+SOFTWARE_SED='s/[^A-Za-z0-9.]/ /g'
+
+die(){ printf '%s\n' "$*" >&2; exit 1; }
+
+probe_stat() {
+  f="$1"; [ -e "$f" ] || return 1
+  inode=$(stat -c %i "$f" 2>/dev/null || stat -f %i "$f")
+  size=$(stat -c %s "$f" 2>/dev/null || stat -f %z "$f")
+  mtime=$(stat -c %Y "$f" 2>/dev/null || stat -f %m "$f")
+  raw="${inode}:${size}:${mtime}"
+  # simplistic, portable-ish hex-bytes from raw string
+  printf '%s' "$raw" | awk '
+    function ord(c){ return index("\\x01\\x02", c) }  # placeholder (POSIX awk lacks ord)
+    { for (i=1;i<=length($0);i++){ c=substr($0,i,1); printf "%02X", and(255, sprintf("%d", c)); if (i<length($0)) printf ":" } }
+  ' 2>/dev/null || printf '%s' "$raw" | hexdump -v -e '1/1 "%02X:"' | sed 's/:$//'
+}
+
+project_software(){ sed "$SOFTWARE_SED"; }
+
+extract_enclosures(){
+  awk '{
+    s=$0;
+    while (match(s,/([^A-Za-z0-9.]+)/)){
+      print substr(s,RSTART,RLENGTH);
+      s=substr(s,RSTART+RLENGTH);
+    }
+  }'
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  scan) root="${2:-.}"; find "$root" -type f | while read -r f; do hw=$(probe_stat "$f" || true); printf "FILE %s\nHARDWARE %s\n----\n" "$f" "$hw"; done ;;
+  software) [ $# -eq 2 ] || die "software <file>"; cat "$2" | project_software ;;
+  syntax) [ $# -eq 2 ] || die "syntax <file>"; cat "$2" | extract_enclosures ;;
+  *) cat <<EOF
+usage:
+  ./genesis.sh scan [path]
+  ./genesis.sh software <file>
+  ./genesis.sh syntax <file>
+EOF
+  ;;
+esac
+#+END_SRC
+
+* INDEX binding (org-structure templates)
+GENESIS delegates template registry and expansion to INDEX.org.
+
+- [[file:INDEX.org][INDEX.org]] defines:
+  - org-structure-template-alist (templates)
+  - org-tempo-keywords-alist (short triggers)
+  - export mapping (org → md)
