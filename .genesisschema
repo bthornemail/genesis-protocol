@@ -1,0 +1,6 @@
+# Schema DB placeholder.
+# Later: compiled schema.bin is authoritative for protected/public.
+schema.version=0
+realm.default=private
+signature.required.protected=true
+signature.required.public=true
