@@ -1,0 +1,16 @@
+# Anything here is KNOWN-KNOWN (light)
+genesis/
+logos/
+creation/
+revelation/
+tools/
+*.org
+*.scm
+*.c
+*.h
+*.lean
+*.md
+*.json
+*.jsonl
+*.yaml
+*.yml

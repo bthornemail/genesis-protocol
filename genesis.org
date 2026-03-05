@@ -438,3 +438,82 @@ CREATION stubs live in creation/layer.N/
 #+BEGIN_SRC text :tangle revelation/.keep
 REVELATION stubs live in revelation/layer.N/
 #+END_SRC
+
+* 13. Transform Layer — Spatial Projection (Layer 3+)
+
+This implements the canonical GENESIS transform from atoms to 3D coordinates.
+
+See: =docs/RFC-GENESIS-TRANSFORM-0001.md= for formal specification.
+
+#+BEGIN_SRC scheme :tangle genesis/layer.3/genesis-transform.scm
+;; genesis-transform.scm (Guile)
+;; Canonical transform: atom → (position, scale, rotation)
+;; Implements RFC-GENESIS-TRANSFORM-0001
+
+(use-modules (ice-9 math))
+
+;; FNV-1a 32-bit hash (for realm index derivation)
+(define (fnv1a32 s)
+  (let loop ((i 0) (h #x811c9dc5))
+    (if (= i (string-length s))
+        (logand h #xffffffff)
+        (let* ((c (char->integer (string-ref s i)))
+               (h1 (logxor h c))
+               (h2 (modulo (* h1 #x01000193) #x100000000)))
+          (loop (+ i 1) h2)))))
+
+;; Class offset: private=0.0, protected=0.25, public=0.5
+(define (class-offset cls)
+  (cond ((equal? cls "public") 0.5)
+        ((equal? cls "protected") 0.25)
+        (else 0.0)))
+
+;; Main transform: atom + options → position/scale/rotation
+(define (genesis-transform atom . opts)
+  (define (opt k d)
+    (let ((p (assoc k opts))) (if p (cdr p) d)))
+  (let* ((realm-count (opt 'realmCount 8))
+         (radius     (opt 'radius 8.0))
+         (depth-step (opt 'depthStep 2.0))
+         (time-scale (opt 'timeScale 0.0000005))
+         (size-scale (opt 'sizeScale 0.001))
+         (min-scale  (opt 'minScale 0.3))
+         (rot-mod    (opt 'rotMod 360))
+         (realm (or (assoc-ref atom 'realm) ""))
+         (realm-idx (modulo (fnv1a32 realm) realm-count))
+         (angle (* (/ realm-idx realm-count) (* 2.0 pi)))
+         (st (or (assoc-ref atom 'stat) '()))
+         (depth (or (assoc-ref atom 'depth) 0))
+         (mtime (or (assoc-ref st 'mtime) 0))
+         (size (or (assoc-ref st 'size) 0))
+         (inode (or (assoc-ref st 'inode) 0))
+         (cls (or (assoc-ref (or (assoc-ref atom 'schema) '()) 'class) "private"))
+         (x (* (cos angle) radius))
+         (z (* (sin angle) radius))
+         (y (+ (* depth depth-step)
+               (* mtime time-scale)
+               (class-offset cls)))
+         (s (max min-scale (* (log (+ size 1)) size-scale)))
+         (rotY (* (/ (modulo inode rot-mod) rot-mod) (* 2.0 pi))))
+    `((position . (,x ,y ,z))
+      (scale . ,s)
+      (rotY . ,rotY)
+      (realmIndex . ,realm-idx))))
+
+;; Convert transform to packed Float32 buffer layout: [x y z s rotY]
+(define (to-buffer t)
+  (let* ((pos (assoc-ref t 'position))
+         (x (list-ref pos 0))
+         (y (list-ref pos 1))
+         (z (list-ref pos 2))
+         (s (assoc-ref t 'scale))
+         (r (assoc-ref t 'rotY)))
+    (list x y z s r)))
+
+;; Optional: role → geometry hint (orthogonal to transform)
+(define (geometry-for-role role)
+  (cond ((equal? role "kernel") "octahedron")
+        ((equal? role "org") "icosahedron")
+        ((equal? role "asset") "sphere")
+        (else "box")))
+#+END_SRC

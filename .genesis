@@ -1,0 +1,5 @@
+# Functor table placeholder:
+# row = ignore-class, col = include-class, cell = scheme/rule-set
+UU,*,none
+KU,*,defer
+KK,*,default-rules

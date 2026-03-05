@@ -1,0 +1,18 @@
+# Anything here is UNKNOWN-UNKNOWN (dark)
+.git/
+.org/
+node_modules/
+dist/
+build/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.bin
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.zip
